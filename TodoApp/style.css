@@ -1,0 +1,81 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+body{
+    background-color: #dddddd;
+}
+.app{
+    display: flex;
+    height: 100vh;
+}
+.side-panel{
+    background-color: #eeeeee;
+
+    flex-shrink: 0;
+    width: 300px;
+
+    transition: width .3s ease;
+}
+.side-panel-inner{
+    padding: 10px 20px;
+}
+.side-panel.collapsed{
+    width: 0;
+    overflow: hidden;
+}
+.side-panel-btn{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    border: none;
+
+    height: 45px;
+    width: 100%;
+    border-radius: 6px;
+}
+.side-panel-btn:hover{
+    background-color: #dddddd;
+}
+.side-panel-btn img{
+    margin-right: 10px;
+    width: 25px;
+}
+.icon{
+    display: block;
+
+    margin:60px auto 100px;
+    width: 80px;
+}
+.task-btn, .categories-btn{
+    display: flex;
+    align-items: center;
+    border: none;
+    background-color: #c7c7c7;
+
+    width: 100%;
+    margin: 6px 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+.task-btn img, .categories-btn img{
+    margin-right: 10px;
+    width: 20px;
+}
+.task-btn span, .categories-btn span{
+    color: #777;
+    font-size: 18px;
+}
+
+.content{
+    flex: 1;
+}
+.content h2{
+    background-color: #ff6565;
+    
+    margin: 30px 20px;
+    padding: 10px 20px;
+    border-radius: 15px;
+}
