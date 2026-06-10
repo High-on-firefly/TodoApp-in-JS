@@ -1,8 +1,81 @@
 //DOM elements
 const sidePanel = document.querySelector(".side-panel");
-const sidePanelBtn = document.querySelector(".side-panel-btn");
+const sidebarBtn = document.querySelector(".sidebar-btn");
+const sidePanelBtns = document.querySelector(".side-panel-btns");
+
+const categoriesBtn = document.querySelector(".categories-btn");
+const categories = document.querySelector(".categories");
+const categoriesList = document.querySelector(".categories ul");
+
+const addCategory = document.querySelector(".add-category");
+const addCategoryPopup = document.querySelector(".add-category-popup");
+const addCategoryCancel = document.querySelector(".popup-nav .cancel");
+const addCategoryAdd = document.querySelector(".popup-nav .add");
+
+const newCategoryName = document.querySelector(".new-category-name");
+const newCategoryColor = document.querySelector(".new-category-color");
+//Functions
+function togglePopup(element){
+    element.classList.toggle("open");
+}
+function updateCategoriesPanelHeight(){
+    categories.style.height = categories.scrollHeight + "px";
+}
+function submitCategory(){
+    const added = addNewCategory();
+
+    if(added){
+        togglePopup(addCategoryPopup);
+    }
+}
+function addNewCategory(){
+    const categoryText = newCategoryName.value.trim();
+
+    if(!categoryText)return false;
+    const newCategory = document.createElement("li");
+    newCategory.textContent = categoryText;
+
+    categoriesList.appendChild(newCategory);
+    updateCategoriesPanelHeight();
+    newCategoryName.value = "";
+    newCategoryColor.value = "";
+
+    return true;
+}
 
 //Events
-sidePanelBtn.addEventListener("click", ()=>{
+sidebarBtn.addEventListener("click", ()=>{
     sidePanel.classList.toggle("collapsed");
 })
+sidePanelBtns.addEventListener("click", (e)=>{
+    const clickedBtn = e.target.closest("button");
+
+    if(!clickedBtn)return;
+    if(!sidePanelBtns.contains(clickedBtn))return;
+
+    const activeBtn = sidePanel.querySelector(".active");
+
+    if(activeBtn){
+        activeBtn.classList.remove("active");
+    }
+
+    clickedBtn.classList.add("active");
+    
+        if (clickedBtn === categoriesBtn) {
+        updateCategoriesPanelHeight();
+    } else {
+        categories.style.height = "0px";
+    }
+})
+addCategory.addEventListener("click", ()=> {
+    togglePopup(addCategoryPopup)
+});
+addCategoryCancel.addEventListener("click", ()=> {
+    togglePopup(addCategoryPopup)
+});
+newCategoryName.addEventListener("keydown", (e)=>{
+    if(e.key ==="Enter"){
+        submitCategory();
+    }
+});
+addCategoryAdd.addEventListener("click", submitCategory);
