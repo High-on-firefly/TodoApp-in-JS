@@ -13,22 +13,49 @@
         <main class="app">
             <aside class="side-panel">
                 <div class="side-panel-inner">
-                    <button class="side-panel-btn"><img src="/Img/sidebar.png" ></button>
-                    <img src="/Img/Logo.png" class="icon">
-                    <button class="task-btn">
-                        <img src="/Img/task.png">
-                        <span>Tasks</span>
-                    </button>
-                    <button class="categories-btn">
-                        <img src="/Img/folder.svg">
-                        <span>Categories</span>
-                    </button>  
+                    <button class="sidebar-btn"><img src="/Img/sidebar.png" ></button>
+                    <img src="/Img/Logo.png" class="logo">
+                    <div class="side-panel-btns">
+                        <button class="side-panel-btn task-btn">
+                            <span class="btn-icon">
+                                <img class="btn-icon-default" src="/Img/task.png">
+                                <img class="btn-icon-active" src="/Img/taskFill.png">
+                            </span>
+                            <span>Tasks</span>
+                        </button>
+                        <button class="side-panel-btn categories-btn">
+                            <span class="btn-icon">
+                                <img class="btn-icon-default" src="/Img/folder.svg">
+                                <img class="btn-icon-active" src="/Img/folderFill.svg">
+                            </span>
+                            <span>Categories</span>
+                        </button> 
+                        <div class="categories">
+                            <ul class="categories-inner">
+                                <li class="add-category"><img src="/Img/add.svg"><span>Add new</span></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>              
             </aside>
             <section class="content">
                 <h2>Hello Task</h2>
             </section>
         </main>
+
+        <main class="add-category-popup">
+            <section class="popup-card">
+                <p>Insert category name</p>
+                <input class="new-category-name" type="text" placeholder="For example Work">
+                <p>Insert category color</p>
+                <input class="new-category-color" type="color">
+                <div class="popup-nav">
+                    <button class="popup-btn cancel">Cancel</button>
+                    <button class="popup-btn add">Add</button>
+                </div>
+            </section>
+        </main>
+
         <script type="module" src="app.js"></script>
     </body>
 </html>
