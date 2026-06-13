@@ -12,14 +12,14 @@ body{
     height: 100vh;
 }
 
-/*SIDEBAR*/
+/* SIDEBAR */
 .sidebar{
     background-color: #fcfcfc;
     overflow: hidden;
     transition: width .3s ease;
 
     flex-shrink: 0;
-    width: 285px;
+    width: 255px;
 }
 .sidebar.close{
     width: 0px;
@@ -36,7 +36,7 @@ body{
     color: transparent;
     background-clip: text;
 
-    background-image: linear-gradient(45deg, #3ea8ff, #9c23ff);
+    background-image: linear-gradient(-135deg, #3ea8ff, #d323ff);
 }
 .sidebar-close-btn{
     background-color: #fcfcfc;
@@ -45,6 +45,7 @@ body{
     align-items: center;
     justify-content: center;
     color: #444;
+    cursor: pointer;
 
     height: 40px;
     aspect-ratio: 1/1;
@@ -99,4 +100,50 @@ body{
 }
 .sidebar-nav-btn.active .sidebar-nav-btn-icon-active{
     display: block;
+}
+
+/* CATEGORIES */
+.categories-container{
+    overflow: hidden;
+    transition: height 0.3s ease;
+    height: 0px;
+}
+.categories-list{
+    background-color: #eee;
+    list-style: none;
+
+    border-radius: 6px;
+    margin-block: 3px;
+    padding: 10px 30px;
+}
+.categories-list li{
+    color: #555;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    margin-block: 3px;
+}
+.add-new-categories-li{
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.add-new-categories-li img{
+    height: 18px;
+    margin-right: 8px;
+}
+.add-new-categories-li span{
+    color: #bbb;
+    font-size: 16px;
+}
+.category-color{
+    background-color: #75ccff;
+    display: inline-block;
+
+    margin-right: 8px;
+    height: 18px;
+    border-radius: 4px;
+    aspect-ratio: 1/1;
 }
