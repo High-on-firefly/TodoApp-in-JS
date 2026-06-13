@@ -109,8 +109,9 @@ body{
 .categories-inner li{
     display: flex;
     align-items: center;
-
     cursor: pointer;
+    user-select: none;
+
     padding: 5px 0px;
 }
 .add-category img{
@@ -129,7 +130,7 @@ body{
     border-radius: 15px;
 }
 
-.add-category-popup{
+.popup{
     display: none;
     position: fixed;
     justify-content: center;
@@ -138,7 +139,7 @@ body{
     
     inset: 0;
 }
-.add-category-popup.open{
+.popup.open{
     display: flex;
 }
 .popup-card{
@@ -192,6 +193,10 @@ body{
 .add{
     border: solid 1px #008d18;
     color: #008d18;
+}
+.delete{
+    border: solid 1px #d32a00;
+    color: #d32a00;
 }
 .new-category-color::-webkit-color-swatch-wrapper{
     padding: 0;

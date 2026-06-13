@@ -8,18 +8,24 @@ const categories = document.querySelector(".categories");
 const categoriesList = document.querySelector(".categories ul");
 
 const addCategory = document.querySelector(".add-category");
+
 const addCategoryPopup = document.querySelector(".add-category-popup");
-const addCategoryCancel = document.querySelector(".popup-nav .cancel");
+const popupCancelBtns = document.querySelectorAll(".popup-nav .cancel");
 const addCategoryAdd = document.querySelector(".popup-nav .add");
+
+const editCategoryPopup = document.querySelector(".edit-category-popup");
+const deleteCategoryBtn = document.querySelector(".delete")
 
 const newCategoryName = document.querySelector(".new-category-name");
 const newCategoryColor = document.querySelector(".new-category-color");
+
+let selectedCategory;
 //Functions
 function togglePopup(element){
     element.classList.toggle("open");
 }
 function updateCategoriesPanelHeight(){
-    categories.style.height = categories.scrollHeight + "px";
+    categories.style.height = categoriesList.scrollHeight + "px";
 }
 function submitCategory(){
     const added = addNewCategory();
@@ -33,14 +39,26 @@ function addNewCategory(){
 
     if(!categoryText)return false;
     const newCategory = document.createElement("li");
+    const newCategoryText = document.createElement("span");
+    
+    newCategory.classList.add("category");
     newCategory.textContent = categoryText;
 
     categoriesList.appendChild(newCategory);
     updateCategoriesPanelHeight();
     newCategoryName.value = "";
-    newCategoryColor.value = "";
+    newCategoryColor.value = "#ffffff"
 
     return true;
+}
+function removeCategory(){
+    selectedCategory.remove();
+    console.log("before remove:", categories.scrollHeight);
+    console.log("selected:", selectedCategory);
+    updateCategoriesPanelHeight();
+    console.log("after remove:", categories.scrollHeight);
+    console.log("list height:", categoriesList.scrollHeight);
+    togglePopup(editCategoryPopup);
 }
 
 //Events
@@ -70,8 +88,11 @@ sidePanelBtns.addEventListener("click", (e)=>{
 addCategory.addEventListener("click", ()=> {
     togglePopup(addCategoryPopup)
 });
-addCategoryCancel.addEventListener("click", ()=> {
-    togglePopup(addCategoryPopup)
+popupCancelBtns.forEach((cancelBtn)=>{
+    cancelBtn.addEventListener("click", ()=>{
+        const popup = cancelBtn.closest(".popup");
+        togglePopup(popup);
+    });
 });
 newCategoryName.addEventListener("keydown", (e)=>{
     if(e.key ==="Enter"){
@@ -79,3 +100,11 @@ newCategoryName.addEventListener("keydown", (e)=>{
     }
 });
 addCategoryAdd.addEventListener("click", submitCategory);
+categoriesList.addEventListener("dblclick", (e)=>{
+    const clickedCategory = e.target.closest(".category");
+
+    if(!clickedCategory)return;
+    selectedCategory = clickedCategory;
+    togglePopup(editCategoryPopup);
+});
+deleteCategoryBtn.addEventListener("click",removeCategory)
