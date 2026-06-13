@@ -7,6 +7,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="popups.css">
         <title>Todo-AppV2</title>
     </head>
     <body>
@@ -28,18 +29,38 @@
                             </span>
                             <span>Tasks</span>
                         </button>
-                        <button class="sidebar-nav-btn">
+                        <button class="sidebar-nav-btn categories-nav-btn">
                             <span class="sidebar-nav-btn-icon">
                                 <img src="/Img/folder.svg" class="sidebar-nav-btn-icon-default">
                                 <img src="/Img/folderFill.svg" class="sidebar-nav-btn-icon-active">
                             </span>
                             <span>Categories</span>
                         </button>
+                        <div class="categories-container">
+                            <ul class="categories-list">
+                                <li class="add-new-categories-li">
+                                    <img src="/Img/add.svg">
+                                    <span class="category-name">Add New</span>
+                                </li>
+                            </ul>
+                        </div>
                     </section>
                 </div>
             </aside>
         </main>
 
+        <main class="popup create-category-popup">
+            <section class="popup-card">
+                <p>Insert category name</p>
+                <input class="category-name-input" type="text" placeholder="For example Work">
+                <p>Insert category color</p>
+                <input class="category-color-input" type="color">
+                <div class="popup-nav">
+                    <button class="popup-nav-btn popup-nav-cancel">Cancel</button>
+                    <button class="popup-nav-btn popup-nav-create">Create</button>
+                </div>
+            </section>
+        </main>        
         <script type="module" src="app.js"></script>
     </body>
 </html>
