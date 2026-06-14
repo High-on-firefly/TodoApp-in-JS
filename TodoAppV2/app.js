@@ -8,14 +8,28 @@ const categoriesContainer = document.querySelector(".categories-container");
 const categoriesList = document.querySelector(".categories-list");
 const addNewCategoriesBtn = document.querySelector(".add-new-categories-li");
 
-const createCategoryPopup = document.querySelector(".create-category-popup");
-const popupNavCancel = document.querySelectorAll(".popup-nav-cancel");
-const popupNavCreate = document.querySelector(".popup-nav-create");
-const categoryNameInput = document.querySelector(".category-name-input");
-const categoryColorInput = document.querySelector(".category-color-input");
+const createCategoryPopup = {
+    element: document.querySelector(".create-category-popup"),
+    cancelBtn: document.querySelector(".create-category-popup .popup-nav-cancel"),
+    createBtn: document.querySelector(".create-category-popup .popup-nav-create"),
+    nameInput: document.querySelector(".create-category-popup .category-name-input"),
+    colorInput: document.querySelector(".create-category-popup .category-color-input")
+}
+
+const editCategoryPopup = {
+    element: document.querySelector(".edit-category-popup"),
+    deleteBtn: document.querySelector(".edit-category-popup .popup-nav-delete"),
+    saveBtn: document.querySelector(".edit-category-popup .popup-nav-save"),    
+    nameInput: document.querySelector(".edit-category-popup .category-name-input"),
+    colorInput: document.querySelector(".edit-category-popup .category-color-input")
+}
+
 
 //Var
 let categories = [];
+let selectedCategoryId;
+let selectedCategory;
+let showCategories = false;
 
 //Events
 sidebarCloseBtn.addEventListener("click", ()=>{
@@ -34,27 +48,51 @@ sidebarNav.addEventListener("click", (e)=>{
     clickedBtn.classList.add("active");
 
     if(clickedBtn === categoriesNavBtn){
+        showCategories = true;
         updateCategoriesContainerHeight();
     }
     else{
-        categoriesContainer.style.height = "0px"
+        showCategories = false;
+        updateCategoriesContainerHeight();
     }
 });
 
 addNewCategoriesBtn.addEventListener("click", ()=>{
-    openPopup(createCategoryPopup);
+    openPopup(createCategoryPopup.element);
 });
-popupNavCancel.forEach((cancelBtn)=>{
-    cancelBtn.addEventListener("click", ()=>{
-        const currentPopup = cancelBtn.closest(".popup");
-        closePopup(currentPopup);
-    })
+createCategoryPopup.cancelBtn.addEventListener("click", ()=>{
+    closePopup(createCategoryPopup.element);
+});
+createCategoryPopup.createBtn.addEventListener("click", createCategory);
+
+categoriesList.addEventListener("dblclick", (e)=>{
+    const clickedCategory = e.target.closest(".category-item")
+    
+    if(!clickedCategory)return;
+    selectedCategoryId = clickedCategory.dataset.categoryId;
+    selectedCategory = categories.find(category => {
+        return category.id === selectedCategoryId;
+    });
+    console.log(categories);
+    editCategoryPopup.nameInput.value = selectedCategory.name;
+    editCategoryPopup.colorInput.value = selectedCategory.color;
+    openPopup(editCategoryPopup.element);
+
 })
-popupNavCreate.addEventListener("click", createCategory);
+editCategoryPopup.deleteBtn.addEventListener("click", ()=>{
+    deleteCategory(selectedCategoryId);
+})
+editCategoryPopup.saveBtn.addEventListener("click", saveCategory);
+
 
 //Functions
 function updateCategoriesContainerHeight(){
-    categoriesContainer.style.height = categoriesList.scrollHeight + "px";
+    if(showCategories){
+        categoriesContainer.style.height = categoriesList.scrollHeight+"px";
+    }
+    else{
+        categoriesContainer.style.height = "0px"
+    }
 }
 
 function openPopup(element){
@@ -65,8 +103,8 @@ function closePopup(element){
 }
 
 function createCategory(){
-    const categoryName = categoryNameInput.value.trim();;
-    const categoryColor = categoryColorInput.value;
+    const categoryName = createCategoryPopup.nameInput.value.trim();;
+    const categoryColor = createCategoryPopup.colorInput.value;
 
     if(!categoryName)return;
 
@@ -76,27 +114,69 @@ function createCategory(){
         color: categoryColor
     };
 
-    categoryNameInput.value = "";
+    createCategoryPopup.nameInput.value = "";
     
     categories.push(newCategory);
-    renderCategory(newCategory);
-    closePopup(createCategoryPopup);
+    saveCategories();
+    renderCategories();
+    closePopup(createCategoryPopup.element);
+}
+function saveCategory(){
+    selectedCategory.name = editCategoryPopup.nameInput.value.trim();
+    selectedCategory.color = editCategoryPopup.colorInput.value;
+    saveCategories();
+    renderCategories();
+    closePopup(editCategoryPopup.element);
+}
+function saveCategories(){
+    localStorage.setItem("categories", JSON.stringify(categories));
+}
+function loadCategories(){
+    const savedCategories = localStorage.getItem("categories");
+
+    if(!savedCategories)return;
+
+    categories = JSON.parse(savedCategories);
+
+    renderCategories();
+}
+function deleteCategory(categoryId){
+    categories = categories.filter((category) =>{
+        return category.id !== categoryId;
+    });
+    saveCategories();
+    renderCategories();
+    closePopup(editCategoryPopup.element);
 }
 function renderCategory(category){
     const categoryItem = document.createElement("li");
-
+    
     categoryItem.dataset.categoryId = category.id;
+    categoryItem.classList.add("category-item");
     categoryItem.innerHTML = `
-        <div class="category-color"></div>
-        <span class="category-name"></span>
+    <div class="category-color"></div>
+    <span class="category-name"></span>
     `;
-
+    
     const categoryItemColor = categoryItem.querySelector(".category-color");
     const categoryItemName = categoryItem.querySelector(".category-name");
-
+    
     categoryItemColor.style.backgroundColor = category.color;
     categoryItemName.textContent = category.name;
-
+    
     categoriesList.appendChild(categoryItem);
-    updateCategoriesContainerHeight();
 }
+function renderCategories(){
+    categoriesList.innerHTML = "";
+    categoriesList.appendChild(addNewCategoriesBtn);
+
+    categories.forEach((category) => {
+        renderCategory(category);
+    });
+
+    updateCategoriesContainerHeight();
+
+}
+
+//End
+loadCategories();
