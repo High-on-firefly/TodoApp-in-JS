@@ -1,12 +1,24 @@
 //DOM Elements
 const sidebar = document.querySelector(".sidebar");
 const sidebarCloseBtn = document.querySelector(".sidebar-close-btn");
+const sidebarOpenBtn = document.querySelector(".sidebar-open-btn");
 const sidebarNav = document.querySelector(".sidebar-nav");
 
-const categoriesNavBtn = document.querySelector(".categories-nav-btn");
 const categoriesContainer = document.querySelector(".categories-container");
 const categoriesList = document.querySelector(".categories-list");
 const addNewCategoriesBtn = document.querySelector(".add-new-categories-li");
+
+const sidebarNavBtns = {
+    tasksBtn: document.querySelector(".tasks-nav-btn"),
+    categoriesBtn: document.querySelector(".categories-nav-btn")
+}
+
+const taskFilterContainer = {
+    element: document.querySelector(".task-filter-container"),
+    allBtn: document.querySelector(".task-filter-container .all-btn"),
+    doneBtn: document.querySelector(".task-filter-container .done-btn"),
+    notDoneBtn: document.querySelector(".task-filter-container .not-done-btn")
+}
 
 const createCategoryPopup = {
     element: document.querySelector(".create-category-popup"),
@@ -34,7 +46,12 @@ let showCategories = false;
 //Events
 sidebarCloseBtn.addEventListener("click", ()=>{
     sidebar.classList.add("close");
+    sidebarOpenBtn.classList.add("active");
 });
+sidebarOpenBtn.addEventListener("click", ()=>{
+    sidebar.classList.remove("close");
+    sidebarOpenBtn.classList.remove("active");
+})
 sidebarNav.addEventListener("click", (e)=>{
     const clickedBtn = e.target.closest("button");
     const activeBtn = document.querySelector(".active");
@@ -47,7 +64,7 @@ sidebarNav.addEventListener("click", (e)=>{
     }
     clickedBtn.classList.add("active");
 
-    if(clickedBtn === categoriesNavBtn){
+    if(clickedBtn === sidebarNavBtns.categoriesBtn){
         showCategories = true;
         updateCategoriesContainerHeight();
     }
@@ -84,6 +101,18 @@ editCategoryPopup.deleteBtn.addEventListener("click", ()=>{
 })
 editCategoryPopup.saveBtn.addEventListener("click", saveCategory);
 
+taskFilterContainer.element.addEventListener("click", (e)=>{
+    const clickedBtn = e.target.closest("button");
+    const activeBtn = document.querySelector(".task-filter-container .active");
+
+    if(!clickedBtn)return;
+    if(!clickedBtn === activeBtn)return;
+
+    if(activeBtn){
+        activeBtn.classList.remove("active");
+    }
+    clickedBtn.classList.add("active");
+})
 
 //Functions
 function updateCategoriesContainerHeight(){
@@ -177,6 +206,11 @@ function renderCategories(){
     updateCategoriesContainerHeight();
 
 }
+function initApp(){
+    loadCategories();
+    sidebarNavBtns.tasksBtn.click();
+    taskFilterContainer.allBtn.click();
+}
 
-//End
-loadCategories();
+//Initialize
+initApp();
