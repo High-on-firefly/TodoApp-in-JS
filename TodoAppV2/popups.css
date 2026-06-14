@@ -62,3 +62,11 @@
     border: solid 1px #008d18;
     color: #008d18;
 }
+.popup-nav-save{
+    border: solid 1px #008d76;
+    color: #008d76;
+}
+.popup-nav-delete{
+    border: solid 1px #d32a00;
+    color: #d32a00;
+}
