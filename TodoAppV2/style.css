@@ -116,11 +116,12 @@ body{
     margin-block: 3px;
     padding: 10px 30px;
 }
-.categories-list li{
+.category-item{
     color: #555;
     display: flex;
     align-items: center;
     cursor: pointer;
+    user-select: none;
 
     margin-block: 3px;
 }
