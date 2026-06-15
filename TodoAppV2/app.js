@@ -8,6 +8,8 @@ const categoriesContainer = document.querySelector(".categories-container");
 const categoriesList = document.querySelector(".categories-list");
 const addNewCategoriesBtn = document.querySelector(".add-new-categories-li");
 
+const addTaskBtn = document.querySelector(".add-task-btn");
+
 const sidebarNavBtns = {
     tasksBtn: document.querySelector(".tasks-nav-btn"),
     categoriesBtn: document.querySelector(".categories-nav-btn")
@@ -34,6 +36,15 @@ const editCategoryPopup = {
     saveBtn: document.querySelector(".edit-category-popup .popup-nav-save"),    
     nameInput: document.querySelector(".edit-category-popup .category-name-input"),
     colorInput: document.querySelector(".edit-category-popup .category-color-input")
+}
+
+const addTaskPopup ={
+    element: document.querySelector(".add-task-popup"),
+    cancelBtn: document.querySelector(".add-task-popup .popup-nav-cancel"),
+    addbtn: document.querySelector(".add-task-popup .popup-nav-add"),
+    nameInput: document.querySelector(".add-task-popup .task-name-input"),
+    categorySelect: document.querySelector(".add-task-popup .task-category-btn"),
+    categoryList: document.querySelector(".task-category-list")
 }
 
 
@@ -95,10 +106,10 @@ categoriesList.addEventListener("dblclick", (e)=>{
     editCategoryPopup.colorInput.value = selectedCategory.color;
     openPopup(editCategoryPopup.element);
 
-})
+});
 editCategoryPopup.deleteBtn.addEventListener("click", ()=>{
     deleteCategory(selectedCategoryId);
-})
+});
 editCategoryPopup.saveBtn.addEventListener("click", saveCategory);
 
 taskFilterContainer.element.addEventListener("click", (e)=>{
@@ -112,7 +123,25 @@ taskFilterContainer.element.addEventListener("click", (e)=>{
         activeBtn.classList.remove("active");
     }
     clickedBtn.classList.add("active");
-})
+});
+
+addTaskBtn.addEventListener("click", ()=>{
+    openPopup(addTaskPopup.element);
+});
+addTaskPopup.cancelBtn.addEventListener("click", ()=>{
+    closePopup(addTaskPopup.element);
+});
+addTaskPopup.categorySelect.addEventListener("click", (e)=>{
+    e.stopPropagation();
+
+    addTaskPopup.categoryList.classList.toggle("active");
+
+    if(addTaskPopup.categoryList.classList.contains("active")){
+        document.body.addEventListener("click", handleOutsideDropdownClick)
+    } else {
+        document.body.removeEventListener("click", handleOutsideDropdownClick);
+    }
+});
 
 //Functions
 function updateCategoriesContainerHeight(){
@@ -194,11 +223,13 @@ function renderCategory(category){
     categoryItemName.textContent = category.name;
     
     categoriesList.appendChild(categoryItem);
+    addTaskPopup.categoryList.appendChild(categoryItem.cloneNode(true));
 }
 function renderCategories(){
     categoriesList.innerHTML = "";
     categoriesList.appendChild(addNewCategoriesBtn);
 
+    addTaskPopup.categoryList.innerHTML = "";
     categories.forEach((category) => {
         renderCategory(category);
     });
@@ -206,10 +237,15 @@ function renderCategories(){
     updateCategoriesContainerHeight();
 
 }
+function handleOutsideDropdownClick(e){
+    addTaskPopup.categoryList.classList.remove("active");
+    document.body.removeEventListener("click", handleOutsideDropdownClick);
+}
 function initApp(){
     loadCategories();
     sidebarNavBtns.tasksBtn.click();
     taskFilterContainer.allBtn.click();
+    sidebarCloseBtn.click();
 }
 
 //Initialize
