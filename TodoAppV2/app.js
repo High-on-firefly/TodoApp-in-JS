@@ -9,6 +9,7 @@ const categoriesList = document.querySelector(".categories-list");
 const addNewCategoriesBtn = document.querySelector(".add-new-categories-li");
 
 const addTaskBtn = document.querySelector(".add-task-btn");
+const taskList = document.querySelector(".task-list");
 
 const sidebarNavBtns = {
     tasksBtn: document.querySelector(".tasks-nav-btn"),
@@ -42,18 +43,26 @@ const addTaskPopup ={
     element: document.querySelector(".add-task-popup"),
     cancelBtn: document.querySelector(".add-task-popup .popup-nav-cancel"),
     addbtn: document.querySelector(".add-task-popup .popup-nav-add"),
-    nameInput: document.querySelector(".add-task-popup .task-name-input"),
-    categorySelect: document.querySelector(".add-task-popup .task-category-btn"),
+    titleInput: document.querySelector(".add-task-popup .task-title-input"),
+    categorySelectBtn: document.querySelector(".add-task-popup .task-category-btn"),
+    categoryName: document.querySelector(".task-category-name"),
+    selectedCategory: undefined,
     categoryList: document.querySelector(".task-category-list")
 }
 
 
+
 //Var
 let categories = [];
+let tasks = [];
 let selectedCategoryId;
 let selectedCategory;
 let showCategories = false;
-
+const DEFAULT_CATEGORY = {
+    id: null,
+    name: "Todo",
+    color: "#9c23ff"
+} 
 //Events
 sidebarCloseBtn.addEventListener("click", ()=>{
     sidebar.classList.add("close");
@@ -101,7 +110,6 @@ categoriesList.addEventListener("dblclick", (e)=>{
     selectedCategory = categories.find(category => {
         return category.id === selectedCategoryId;
     });
-    console.log(categories);
     editCategoryPopup.nameInput.value = selectedCategory.name;
     editCategoryPopup.colorInput.value = selectedCategory.color;
     openPopup(editCategoryPopup.element);
@@ -131,9 +139,10 @@ addTaskBtn.addEventListener("click", ()=>{
 addTaskPopup.cancelBtn.addEventListener("click", ()=>{
     closePopup(addTaskPopup.element);
 });
-addTaskPopup.categorySelect.addEventListener("click", (e)=>{
+addTaskPopup.categorySelectBtn.addEventListener("click", (e)=>{
     e.stopPropagation();
 
+    addTaskPopup.categorySelectBtn.classList.toggle("active");
     addTaskPopup.categoryList.classList.toggle("active");
 
     if(addTaskPopup.categoryList.classList.contains("active")){
@@ -142,7 +151,33 @@ addTaskPopup.categorySelect.addEventListener("click", (e)=>{
         document.body.removeEventListener("click", handleOutsideDropdownClick);
     }
 });
+addTaskPopup.categoryList.addEventListener("click", (e)=>{
+    const clickedCategory = e.target.closest(".category-item");
+    
+    if(!clickedCategory) return;
+    const clickedCategoryId = clickedCategory.dataset.categoryId;
+    addTaskPopup.selectedCategory = categories.find(category => {
+        return category.id === clickedCategoryId;
+    });
 
+    addTaskPopup.categoryName.textContent = addTaskPopup.selectedCategory.name; 
+});
+addTaskPopup.addbtn.addEventListener("click", addTask);
+taskList.addEventListener("click", (e)=>{
+    const clickedBtn = e.target.closest("button");
+
+    if(!clickedBtn)return;
+
+    const taskItem = clickedBtn.closest(".task-item");
+    const taskId = taskItem.dataset.taskId;
+
+    if(clickedBtn.classList.contains("task-erase-btn")){
+        eraseTask(taskId);
+    }
+    if(clickedBtn.classList.contains("task-status-btn")){
+        taskStatusToggle(taskId);
+    }
+})
 //Functions
 function updateCategoriesContainerHeight(){
     if(showCategories){
@@ -159,9 +194,103 @@ function openPopup(element){
 function closePopup(element){
     element.classList.remove("open");
 }
+function addTask(){
+    const taskTitle = addTaskPopup.titleInput.value.trim();
 
+    const category = addTaskPopup.selectedCategory||DEFAULT_CATEGORY;
+
+    if(!taskTitle)return;
+
+    const newTask = {
+        id: crypto.randomUUID(),
+        title: taskTitle,
+        categoryId:  category.id,
+        categoryName: category.name,
+        categoryColor: category.color,
+        done: false
+    }
+
+    addTaskPopup.titleInput.value = "";
+    addTaskPopup.categoryName.textContent = "none";
+    addTaskPopup.selectedCategory = undefined;
+    tasks.push(newTask);
+    saveTasks();
+    renderTasks();
+    closePopup(addTaskPopup.element);
+}
+function eraseTask(taskId){
+    tasks = tasks.filter((task) =>{
+        return task.id !== taskId;
+    })
+    saveTasks();
+    renderTasks();
+}
+function taskStatusToggle(taskId){
+    const selectedtask = tasks.find(task=> {
+        return task.id === taskId
+    });
+    if(!selectedtask.done){
+        selectedtask.done = true;
+    } else {
+        selectedtask.done = false;
+    }
+    saveTasks();
+    renderTasks();
+}
+function saveTasks(){
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+function loadTasks(){
+    const savedTasks = localStorage.getItem("tasks");
+
+    if(!savedTasks)return;
+
+    tasks = JSON.parse(savedTasks);
+
+    renderTasks();
+}
+function renderTask(task){
+    const taskItem = document.createElement("li");
+    taskItem.classList.add("task-item");
+    taskItem.dataset.taskId = task.id;
+    taskItem.dataset.categoryId = task.categoryId;
+
+    taskItem.innerHTML = `
+        <button class="task-status-btn"><div class="task-status"></div></button>
+        <div class="task-details">
+            <h2 class="task-title"></h2>
+            <span class="task-category">
+                <div class="category-color"></div>
+                <span class="category-name"></span>
+            </span>
+        </div>
+        <button class="task-item-btn task-edit-btn"><img src="/Img/edit.svg"></button>
+        <button class="task-item-btn task-erase-btn"><img src="/Img/erase.svg"></button>            
+    `;
+    const taskTitle = taskItem.querySelector(".task-title");
+    const categoryColor = taskItem.querySelector(".category-color");
+    const categoryName = taskItem.querySelector(".category-name");
+
+    taskTitle.textContent = task.title;
+    categoryColor.style.backgroundColor = task.categoryColor;
+    categoryName.textContent = task.categoryName;
+    if(task.done){
+        taskItem.classList.add("done");
+    } else {
+        taskItem.classList.remove("done");
+    }
+
+    taskList.appendChild(taskItem);
+}
+function renderTasks(){
+    taskList.innerHTML = "";
+
+    tasks.forEach((task)=>{
+        renderTask(task);
+    })
+}
 function createCategory(){
-    const categoryName = createCategoryPopup.nameInput.value.trim();;
+    const categoryName = createCategoryPopup.nameInput.value.trim();
     const categoryColor = createCategoryPopup.colorInput.value;
 
     if(!categoryName)return;
@@ -239,13 +368,14 @@ function renderCategories(){
 }
 function handleOutsideDropdownClick(e){
     addTaskPopup.categoryList.classList.remove("active");
+    addTaskPopup.categorySelectBtn.classList.remove("active");
     document.body.removeEventListener("click", handleOutsideDropdownClick);
 }
 function initApp(){
     loadCategories();
+    loadTasks();
     sidebarNavBtns.tasksBtn.click();
     taskFilterContainer.allBtn.click();
-    sidebarCloseBtn.click();
 }
 
 //Initialize
