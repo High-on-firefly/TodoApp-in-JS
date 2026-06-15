@@ -61,6 +61,9 @@
                             <button class="task-filter-btn done-btn">Done</button>
                             <button class="task-filter-btn not-done-btn">Not Done</button>
                         </div>
+                        <div class="tasks-list-container">
+                            <button class="add-task-btn"><img src="/Img/add.svg" alt=""></button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -87,6 +90,27 @@
                 <div class="popup-nav">
                     <button class="popup-nav-btn popup-nav-delete">Delete</button>
                     <button class="popup-nav-btn popup-nav-save">Save</button>
+                </div>
+            </section>
+        </main>        
+        <main class="popup add-task-popup">
+            <section class="popup-card">
+                <p>Insert name</p>
+                <input class="task-name-input" type="text" placeholder="Task name">
+                <p>Select a category</p>
+                <div class="task-category-dropdown">
+                    <button class="task-category-btn">
+                        None
+                    </button>
+                    <ul class="task-category-list">
+                        <!-- <li>category</li>
+                        <li>category1</li>
+                        <li>category2</li> -->
+                    </ul>
+                </div>
+                <div class="popup-nav">
+                    <button class="popup-nav-btn popup-nav-cancel">Cancel</button>
+                    <button class="popup-nav-btn popup-nav-create popup-nav-add">Add</button>
                 </div>
             </section>
         </main>        
