@@ -61,8 +61,34 @@
                             <button class="task-filter-btn done-btn">Done</button>
                             <button class="task-filter-btn not-done-btn">Not Done</button>
                         </div>
+                        <button class="add-task-btn"><img src="/Img/add.svg" alt=""></button>
                         <div class="tasks-list-container">
-                            <button class="add-task-btn"><img src="/Img/add.svg" alt=""></button>
+                            <ul class="task-list">
+                                <!-- <li class="task-item">
+                                    <button class="task-status-btn"><div class="task-status"></div></button>
+                                    <div class="task-details">
+                                        <h2 class="task-title">Finish TodoApp v2</h2>
+                                        <span class="task-category">
+                                            <div class="category-color"></div>
+                                            <span class="category-name">Undifined</span>
+                                        </span>
+                                    </div>
+                                    <button class="task-item-btn task-edit-btn"><img src="/Img/edit.svg"></button>
+                                    <button class="task-item-btn task-erase-btn"><img src="/Img/erase.svg"></button>
+                                </li>
+                                <li class="task-item done">
+                                    <button class="task-status-btn"><div class="task-status"></div></button>
+                                    <div class="task-details">
+                                        <h2 class="task-title">Finish TodoApp v2</h2>
+                                        <span class="task-category">
+                                            <div class="category-color"></div>
+                                            <span class="category-name">Undifined</span>
+                                        </span>
+                                    </div>
+                                    <button class="task-item-btn task-edit-btn"><img src="/Img/edit.svg"></button>
+                                    <button class="task-item-btn task-erase-btn"><img src="/Img/erase.svg"></button>
+                                </li> -->
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -96,16 +122,14 @@
         <main class="popup add-task-popup">
             <section class="popup-card">
                 <p>Insert name</p>
-                <input class="task-name-input" type="text" placeholder="Task name">
+                <input class="task-title-input" type="text" placeholder="Task name">
                 <p>Select a category</p>
                 <div class="task-category-dropdown">
                     <button class="task-category-btn">
-                        None
+                        <span class="task-category-name">none</span>
+                        <img src="/Img/arrow.svg">
                     </button>
                     <ul class="task-category-list">
-                        <!-- <li>category</li>
-                        <li>category1</li>
-                        <li>category2</li> -->
                     </ul>
                 </div>
                 <div class="popup-nav">
