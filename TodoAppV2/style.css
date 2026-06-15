@@ -1,3 +1,15 @@
+::-webkit-scrollbar {
+    width: 30px;
+}
+::-webkit-scrollbar-track{
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border: 12px solid #fcfcfc;
+
+    border-radius: 999px;
+}
 *{
     padding: 0;
     margin: 0;
@@ -121,17 +133,8 @@ body{
     /* margin-block: 3px;
     padding: 10px 30px; */
 }
-.categories-list::-webkit-scrollbar {
-    width: 30px;
-}
-.categories-list::-webkit-scrollbar-track{
-    background: transparent;
-}
 .categories-list::-webkit-scrollbar-thumb {
-    background: #bbb;
-    border: 12px solid #eee;
-
-    border-radius: 999px;
+    border-color:#eee;
 }
 .category-item{
     color: #555;
@@ -186,7 +189,7 @@ body{
     align-items: center;
     position: relative;
 
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 .sidebar-open-btn{
     border: none;
@@ -230,6 +233,7 @@ body{
 /* TASK FILTER */
 .task-filter-container{
     display: flex;
+    margin-block: 10px;
 }
 .task-filter-container p{
     color: #444;
@@ -254,4 +258,25 @@ body{
     background-color: #fcfcfc;
     color: #000;
     box-shadow: 0px 1px 2px #00000049;
+}
+
+/* TASK LIST CONTAINER */
+.tasks-list-container{
+    margin-block: 20px;
+}
+.add-task-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    color: #bbb;
+    border: 2px solid #bbb;
+    cursor: pointer;
+
+    border-radius: 12px;
+    height: 40px;
+    width: 100%;
+}
+.add-task-btn img{
+    width: 30px;
 }
