@@ -30,6 +30,20 @@
     border: solid 1px #777;
     color: inherit;
 
+    padding-left: 5px;
+    margin-block: 5px;
+    font-size: 18px;
+    border-radius: 5px;
+    width: 100%;
+}
+.popup-card .task-category-btn{
+    background-color: inherit;
+    outline: none;
+    border: solid 1px #777;
+    color: inherit;
+    text-align: left;
+
+    padding-left: 5px;
     margin-block: 5px;
     font-size: 18px;
     border-radius: 5px;
@@ -70,4 +84,34 @@
 .popup-nav-delete{
     border: solid 1px #d32a00;
     color: #d32a00;
+}
+.task-category-list{
+    position: fixed;
+    list-style: none;
+    text-align: left;
+    box-sizing: content-box;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    
+    max-height: 0px;
+    width: 400px;
+    background-color: #fcfcfc;
+    border-radius: 8px;
+}
+.task-category-list.active{
+    overflow-y: auto;
+
+    max-height: 135px;
+}
+
+.task-category-list li{
+    transition: margin-left 0.2s ease;
+
+    padding: 2px 10px;
+    margin-left: 0;
+}
+.task-category-list li:hover{
+    margin-left: 10px;
+    background-color: #eee;
+    border-radius: 6px;
 }
