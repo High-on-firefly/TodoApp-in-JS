@@ -42,12 +42,23 @@ const editCategoryPopup = {
 const addTaskPopup ={
     element: document.querySelector(".add-task-popup"),
     cancelBtn: document.querySelector(".add-task-popup .popup-nav-cancel"),
-    addbtn: document.querySelector(".add-task-popup .popup-nav-add"),
+    addBtn: document.querySelector(".add-task-popup .popup-nav-add"),
     titleInput: document.querySelector(".add-task-popup .task-title-input"),
     categorySelectBtn: document.querySelector(".add-task-popup .task-category-btn"),
-    categoryName: document.querySelector(".task-category-name"),
+    categoryName: document.querySelector(".add-task-popup .task-category-name"),
     selectedCategory: undefined,
-    categoryList: document.querySelector(".task-category-list")
+    categoryList: document.querySelector(".add-task-popup .task-category-list")
+}
+
+const editTaskPopup ={
+    element: document.querySelector(".edit-task-popup"),
+    cancelBtn: document.querySelector(".edit-task-popup .popup-nav-cancel"),
+    saveBtn: document.querySelector(".edit-task-popup .popup-nav-save"),
+    titleInput: document.querySelector(".edit-task-popup .task-title-input"),
+    categorySelectBtn: document.querySelector(".edit-task-popup .task-category-btn"),
+    categoryName: document.querySelector(".edit-task-popup .task-category-name"),
+    selectedCategory: undefined,
+    categoryList: document.querySelector(".edit-task-popup .task-category-list")
 }
 
 
@@ -57,6 +68,8 @@ let categories = [];
 let tasks = [];
 let selectedCategoryId;
 let selectedCategory;
+let selectedTaskId;
+let selectedTask;
 let showCategories = false;
 const DEFAULT_CATEGORY = {
     id: null,
@@ -125,7 +138,7 @@ taskFilterContainer.element.addEventListener("click", (e)=>{
     const activeBtn = document.querySelector(".task-filter-container .active");
 
     if(!clickedBtn)return;
-    if(!clickedBtn === activeBtn)return;
+    if(clickedBtn === activeBtn)return;
 
     if(activeBtn){
         activeBtn.classList.remove("active");
@@ -142,42 +155,67 @@ addTaskPopup.cancelBtn.addEventListener("click", ()=>{
 addTaskPopup.categorySelectBtn.addEventListener("click", (e)=>{
     e.stopPropagation();
 
-    addTaskPopup.categorySelectBtn.classList.toggle("active");
-    addTaskPopup.categoryList.classList.toggle("active");
-
-    if(addTaskPopup.categoryList.classList.contains("active")){
-        document.body.addEventListener("click", handleOutsideDropdownClick)
-    } else {
-        document.body.removeEventListener("click", handleOutsideDropdownClick);
-    }
+    toggleCategoryDropdown(addTaskPopup);
 });
 addTaskPopup.categoryList.addEventListener("click", (e)=>{
     const clickedCategory = e.target.closest(".category-item");
     
     if(!clickedCategory) return;
-    const clickedCategoryId = clickedCategory.dataset.categoryId;
-    addTaskPopup.selectedCategory = categories.find(category => {
-        return category.id === clickedCategoryId;
-    });
-
-    addTaskPopup.categoryName.textContent = addTaskPopup.selectedCategory.name; 
+    selectCategoryFromDropdown(addTaskPopup, clickedCategory);
 });
-addTaskPopup.addbtn.addEventListener("click", addTask);
+addTaskPopup.addBtn.addEventListener("click", addTask);
 taskList.addEventListener("click", (e)=>{
     const clickedBtn = e.target.closest("button");
 
     if(!clickedBtn)return;
 
     const taskItem = clickedBtn.closest(".task-item");
-    const taskId = taskItem.dataset.taskId;
+    selectedTaskId = taskItem.dataset.taskId;
+    selectedTask = tasks.find((task)=>{
+        return (selectedTaskId===task.id);
+    })
 
     if(clickedBtn.classList.contains("task-erase-btn")){
-        eraseTask(taskId);
+        eraseTask(selectedTaskId);
+    } else if (clickedBtn.classList.contains("task-status-btn")){
+        taskStatusToggle(selectedTaskId);
+    } else if (clickedBtn.classList.contains("task-edit-btn")){
+        openPopup(editTaskPopup.element);
+        editTaskPopup.titleInput.value = selectedTask.title;
+        editTaskPopup.categoryName.textContent = selectedTask.categoryName;
+        editTaskPopup.selectedCategory = categories.find((category) =>{
+            return (category.id === selectedTask.categoryId);
+        })
     }
-    if(clickedBtn.classList.contains("task-status-btn")){
-        taskStatusToggle(taskId);
-    }
+});
+
+editTaskPopup.cancelBtn.addEventListener("click", ()=>{
+    closePopup(editTaskPopup.element);
 })
+editTaskPopup.categorySelectBtn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    toggleCategoryDropdown(editTaskPopup);
+});
+editTaskPopup.categoryList.addEventListener("click", (e)=>{
+    const clickedCategory = e.target.closest(".category-item");
+
+    if(!clickedCategory) return;
+    selectCategoryFromDropdown(editTaskPopup, clickedCategory);
+})
+editTaskPopup.saveBtn.addEventListener("click", ()=>{
+    console.log("saveBtn clicked");
+    saveTask();
+})
+
+function saveTask(){
+    selectedTask.title = editTaskPopup.titleInput.value;
+    selectedTask.categoryId = editTaskPopup.selectedCategory.id;
+    selectedTask.categoryName = editTaskPopup.selectedCategory.name;
+    selectedTask.categoryColor = editTaskPopup.selectedCategory.color;
+    saveTasks();
+    renderTasks();
+    closePopup(editTaskPopup.element);
+}
 //Functions
 function updateCategoriesContainerHeight(){
     if(showCategories){
@@ -353,12 +391,14 @@ function renderCategory(category){
     
     categoriesList.appendChild(categoryItem);
     addTaskPopup.categoryList.appendChild(categoryItem.cloneNode(true));
+    editTaskPopup.categoryList.appendChild(categoryItem.cloneNode(true));
 }
 function renderCategories(){
     categoriesList.innerHTML = "";
     categoriesList.appendChild(addNewCategoriesBtn);
 
     addTaskPopup.categoryList.innerHTML = "";
+    editTaskPopup.categoryList.innerHTML = "";
     categories.forEach((category) => {
         renderCategory(category);
     });
@@ -366,10 +406,45 @@ function renderCategories(){
     updateCategoriesContainerHeight();
 
 }
-function handleOutsideDropdownClick(e){
-    addTaskPopup.categoryList.classList.remove("active");
-    addTaskPopup.categorySelectBtn.classList.remove("active");
-    document.body.removeEventListener("click", handleOutsideDropdownClick);
+function openCategoryDropdown(popup){
+    popup.categorySelectBtn.classList.toggle("active");
+    popup.categoryList.classList.toggle("active");
+
+    popup.outsideClickHandler = function(e) {
+        const clickedInsideDropdown = popup.categoryList.contains(e.target);
+        const clickedSelectBtn = popup.categorySelectBtn.contains(e.target);
+
+        if (clickedInsideDropdown || clickedSelectBtn) return;
+
+        closeCategoryDropdown(popup);
+    };
+
+    document.body.addEventListener("click", popup.outsideClickHandler);
+}
+function closeCategoryDropdown(popup){
+    popup.categorySelectBtn.classList.remove("active");
+    popup.categoryList.classList.remove("active");
+
+    document.body.removeEventListener("click", popup.outsideClickHandler);
+    popup.outsideClickHandler = null;
+}
+function toggleCategoryDropdown(popup){
+    const isOpen = popup.categorySelectBtn.classList.contains("active");
+
+    if(isOpen){
+        closeCategoryDropdown(popup);
+    } else {
+        openCategoryDropdown(popup)
+    }
+}
+function selectCategoryFromDropdown(popup, clickedCategory){
+    const clickedCategoryId = clickedCategory.dataset.categoryId;
+    
+    popup.selectedCategory = categories.find((category)=>{
+        return category.id === clickedCategoryId;
+    })
+    popup.categoryName.textContent = popup.selectedCategory.name;
+    closeCategoryDropdown(popup);
 }
 function initApp(){
     loadCategories();
