@@ -61,22 +61,31 @@ const editTaskPopup ={
     categoryList: document.querySelector(".edit-task-popup .task-category-list")
 }
 
-
-
 //Var
 let categories = [];
 let tasks = [];
+let visibleTasks = [];
+
 let selectedCategoryId;
 let selectedCategory;
+
 let selectedTaskId;
 let selectedTask;
+
+let currentStatusFilter = "all";
+let currentCategoryFilter = undefined;
+
+let categoryClickTimer;
 let showCategories = false;
+
 const DEFAULT_CATEGORY = {
     id: null,
     name: "Todo",
     color: "#9c23ff"
 } 
+
 //Events
+//Sidebar open/close and navigation
 sidebarCloseBtn.addEventListener("click", ()=>{
     sidebar.classList.add("close");
     sidebarOpenBtn.classList.add("active");
@@ -84,7 +93,7 @@ sidebarCloseBtn.addEventListener("click", ()=>{
 sidebarOpenBtn.addEventListener("click", ()=>{
     sidebar.classList.remove("close");
     sidebarOpenBtn.classList.remove("active");
-})
+});
 sidebarNav.addEventListener("click", (e)=>{
     const clickedBtn = e.target.closest("button");
     const activeBtn = document.querySelector(".active");
@@ -107,6 +116,7 @@ sidebarNav.addEventListener("click", (e)=>{
     }
 });
 
+//Adding a new category
 addNewCategoriesBtn.addEventListener("click", ()=>{
     openPopup(createCategoryPopup.element);
 });
@@ -115,10 +125,14 @@ createCategoryPopup.cancelBtn.addEventListener("click", ()=>{
 });
 createCategoryPopup.createBtn.addEventListener("click", createCategory);
 
+//editing categories
 categoriesList.addEventListener("dblclick", (e)=>{
     const clickedCategory = e.target.closest(".category-item")
     
     if(!clickedCategory)return;
+    
+    clearTimeout(categoryClickTimer);
+
     selectedCategoryId = clickedCategory.dataset.categoryId;
     selectedCategory = categories.find(category => {
         return category.id === selectedCategoryId;
@@ -131,21 +145,9 @@ categoriesList.addEventListener("dblclick", (e)=>{
 editCategoryPopup.deleteBtn.addEventListener("click", ()=>{
     deleteCategory(selectedCategoryId);
 });
-editCategoryPopup.saveBtn.addEventListener("click", saveCategory);
+editCategoryPopup.saveBtn.addEventListener("click", saveEditedCategory);
 
-taskFilterContainer.element.addEventListener("click", (e)=>{
-    const clickedBtn = e.target.closest("button");
-    const activeBtn = document.querySelector(".task-filter-container .active");
-
-    if(!clickedBtn)return;
-    if(clickedBtn === activeBtn)return;
-
-    if(activeBtn){
-        activeBtn.classList.remove("active");
-    }
-    clickedBtn.classList.add("active");
-});
-
+//Adding a new task
 addTaskBtn.addEventListener("click", ()=>{
     openPopup(addTaskPopup.element);
 });
@@ -164,6 +166,8 @@ addTaskPopup.categoryList.addEventListener("click", (e)=>{
     selectCategoryFromDropdown(addTaskPopup, clickedCategory);
 });
 addTaskPopup.addBtn.addEventListener("click", addTask);
+
+//Editing Tasks
 taskList.addEventListener("click", (e)=>{
     const clickedBtn = e.target.closest("button");
 
@@ -173,7 +177,7 @@ taskList.addEventListener("click", (e)=>{
     selectedTaskId = taskItem.dataset.taskId;
     selectedTask = tasks.find((task)=>{
         return (selectedTaskId===task.id);
-    })
+    });
 
     if(clickedBtn.classList.contains("task-erase-btn")){
         eraseTask(selectedTaskId);
@@ -185,13 +189,12 @@ taskList.addEventListener("click", (e)=>{
         editTaskPopup.categoryName.textContent = selectedTask.categoryName;
         editTaskPopup.selectedCategory = categories.find((category) =>{
             return (category.id === selectedTask.categoryId);
-        })
+        });
     }
 });
-
 editTaskPopup.cancelBtn.addEventListener("click", ()=>{
     closePopup(editTaskPopup.element);
-})
+});
 editTaskPopup.categorySelectBtn.addEventListener("click", (e)=>{
     e.stopPropagation();
     toggleCategoryDropdown(editTaskPopup);
@@ -201,21 +204,43 @@ editTaskPopup.categoryList.addEventListener("click", (e)=>{
 
     if(!clickedCategory) return;
     selectCategoryFromDropdown(editTaskPopup, clickedCategory);
-})
-editTaskPopup.saveBtn.addEventListener("click", ()=>{
-    console.log("saveBtn clicked");
-    saveTask();
-})
+});
+editTaskPopup.saveBtn.addEventListener("click", saveEditedTask);
 
-function saveTask(){
-    selectedTask.title = editTaskPopup.titleInput.value;
-    selectedTask.categoryId = editTaskPopup.selectedCategory.id;
-    selectedTask.categoryName = editTaskPopup.selectedCategory.name;
-    selectedTask.categoryColor = editTaskPopup.selectedCategory.color;
-    saveTasks();
-    renderTasks();
-    closePopup(editTaskPopup.element);
-}
+//filtering tasks
+taskFilterContainer.element.addEventListener("click", (e)=>{
+    const clickedBtn = e.target.closest(".task-filter-btn");
+    if(!clickedBtn)return;
+
+    const activeBtn = taskFilterContainer.element.querySelector(".task-filter-btn.active");
+
+    if(clickedBtn === activeBtn)return;
+
+    if(activeBtn){
+        activeBtn.classList.remove("active");
+    }
+    clickedBtn.classList.add("active");
+    currentStatusFilter = clickedBtn.dataset.filter;
+
+    updateVisibleTasks();
+});
+categoriesList.addEventListener("click", (e)=>{
+    const clickedCategory = e.target.closest(".category-item");
+
+    if(!clickedCategory) return;
+
+    clearTimeout(categoryClickTimer);
+    categoryClickTimer = setTimeout(() =>{
+        currentCategoryFilter = clickedCategory.dataset.categoryId;
+        updateVisibleTasks();
+    },200)
+});
+sidebarNavBtns.tasksBtn.addEventListener("click", ()=>{
+    currentCategoryFilter = undefined;
+
+    updateVisibleTasks();
+});
+
 //Functions
 function updateCategoriesContainerHeight(){
     if(showCategories){
@@ -226,11 +251,33 @@ function updateCategoriesContainerHeight(){
     }
 }
 
+//popup management
 function openPopup(element){
     element.classList.add("open");
 }
 function closePopup(element){
     element.classList.remove("open");
+}
+
+//CRUD for tasks
+function saveTasks(){
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+function updateVisibleTasks(){
+    visibleTasks = tasks.filter((task)=>{
+        const matchesStatus = 
+            currentStatusFilter === "all" ||
+            currentStatusFilter === "done" && task.done === true ||
+            currentStatusFilter === "not-done" && task.done === false;
+
+        const matchesCategory = 
+            currentCategoryFilter === undefined ||
+            currentCategoryFilter === task.categoryId;
+
+            return matchesStatus&&matchesCategory;
+    });
+
+    renderTasks();
 }
 function addTask(){
     const taskTitle = addTaskPopup.titleInput.value.trim();
@@ -251,41 +298,45 @@ function addTask(){
     addTaskPopup.titleInput.value = "";
     addTaskPopup.categoryName.textContent = "none";
     addTaskPopup.selectedCategory = undefined;
+
     tasks.push(newTask);
+
     saveTasks();
-    renderTasks();
+    updateVisibleTasks();
     closePopup(addTaskPopup.element);
 }
 function eraseTask(taskId){
     tasks = tasks.filter((task) =>{
         return task.id !== taskId;
     })
+
     saveTasks();
-    renderTasks();
+    updateVisibleTasks();
+}
+function saveEditedTask(){
+    const category = editTaskPopup.selectedCategory || DEFAULT_CATEGORY
+
+    selectedTask.title = category.titleInput.value;
+    selectedTask.categoryId = category.selectedCategory.id;
+    selectedTask.categoryName = category.selectedCategory.name;
+    selectedTask.categoryColor = category.selectedCategory.color;
+
+    saveTasks();
+    updateVisibleTasks();
+    closePopup(editTaskPopup.element);
 }
 function taskStatusToggle(taskId){
-    const selectedtask = tasks.find(task=> {
+    const selectedTask = tasks.find(task=> {
         return task.id === taskId
     });
-    if(!selectedtask.done){
-        selectedtask.done = true;
+    if(!selectedTask.done){
+        selectedTask.done = true;
     } else {
-        selectedtask.done = false;
+        selectedTask.done = false;
     }
+
     saveTasks();
-    renderTasks();
-}
-function saveTasks(){
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-function loadTasks(){
-    const savedTasks = localStorage.getItem("tasks");
-
-    if(!savedTasks)return;
-
-    tasks = JSON.parse(savedTasks);
-
-    renderTasks();
+    updateVisibleTasks();
 }
 function renderTask(task){
     const taskItem = document.createElement("li");
@@ -323,9 +374,23 @@ function renderTask(task){
 function renderTasks(){
     taskList.innerHTML = "";
 
-    tasks.forEach((task)=>{
+    visibleTasks.forEach((task)=>{
         renderTask(task);
     })
+}
+function loadTasks(){
+    const savedTasks = localStorage.getItem("tasks");
+
+    if(!savedTasks)return;
+
+    tasks = JSON.parse(savedTasks);
+
+    updateVisibleTasks();
+}
+
+//CRUD for category
+function saveCategories(){
+    localStorage.setItem("categories", JSON.stringify(categories));
 }
 function createCategory(){
     const categoryName = createCategoryPopup.nameInput.value.trim();
@@ -342,33 +407,24 @@ function createCategory(){
     createCategoryPopup.nameInput.value = "";
     
     categories.push(newCategory);
+
     saveCategories();
     renderCategories();
     closePopup(createCategoryPopup.element);
 }
-function saveCategory(){
+function saveEditedCategory(){
     selectedCategory.name = editCategoryPopup.nameInput.value.trim();
     selectedCategory.color = editCategoryPopup.colorInput.value;
+
     saveCategories();
     renderCategories();
     closePopup(editCategoryPopup.element);
-}
-function saveCategories(){
-    localStorage.setItem("categories", JSON.stringify(categories));
-}
-function loadCategories(){
-    const savedCategories = localStorage.getItem("categories");
-
-    if(!savedCategories)return;
-
-    categories = JSON.parse(savedCategories);
-
-    renderCategories();
 }
 function deleteCategory(categoryId){
     categories = categories.filter((category) =>{
         return category.id !== categoryId;
     });
+
     saveCategories();
     renderCategories();
     closePopup(editCategoryPopup.element);
@@ -396,16 +452,27 @@ function renderCategory(category){
 function renderCategories(){
     categoriesList.innerHTML = "";
     categoriesList.appendChild(addNewCategoriesBtn);
-
+    
     addTaskPopup.categoryList.innerHTML = "";
     editTaskPopup.categoryList.innerHTML = "";
     categories.forEach((category) => {
         renderCategory(category);
     });
-
+    
     updateCategoriesContainerHeight();
-
+    
 }
+function loadCategories(){
+    const savedCategories = localStorage.getItem("categories");
+
+    if(!savedCategories)return;
+
+    categories = JSON.parse(savedCategories);
+
+    renderCategories();
+}
+
+//Category Dropdown and selection management
 function openCategoryDropdown(popup){
     popup.categorySelectBtn.classList.toggle("active");
     popup.categoryList.classList.toggle("active");
@@ -444,13 +511,17 @@ function selectCategoryFromDropdown(popup, clickedCategory){
         return category.id === clickedCategoryId;
     })
     popup.categoryName.textContent = popup.selectedCategory.name;
+
     closeCategoryDropdown(popup);
 }
+
+//Initialize function
 function initApp(){
     loadCategories();
     loadTasks();
     sidebarNavBtns.tasksBtn.click();
     taskFilterContainer.allBtn.click();
+    sidebarCloseBtn.click();
 }
 
 //Initialize
