@@ -30,7 +30,7 @@
     border: solid 1px #777;
     color: inherit;
 
-    padding-left: 5px;
+    /* padding-left: 5px; */
     margin-block: 5px;
     font-size: 18px;
     border-radius: 5px;
@@ -65,7 +65,7 @@
 .popup-nav{
     margin-block: 15px;
 }
-.category-name-input{
+.category-name-input, .task-title-input, .task-category-btn{
     padding: 5px 10px;
 }
 .category-color-input{
