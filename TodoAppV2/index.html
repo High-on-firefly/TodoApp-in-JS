@@ -64,30 +64,6 @@
                         <button class="add-task-btn"><img src="/Img/add.svg" alt=""></button>
                         <div class="tasks-list-container">
                             <ul class="task-list">
-                                <!-- <li class="task-item">
-                                    <button class="task-status-btn"><div class="task-status"></div></button>
-                                    <div class="task-details">
-                                        <h2 class="task-title">Finish TodoApp v2</h2>
-                                        <span class="task-category">
-                                            <div class="category-color"></div>
-                                            <span class="category-name">Undifined</span>
-                                        </span>
-                                    </div>
-                                    <button class="task-item-btn task-edit-btn"><img src="/Img/edit.svg"></button>
-                                    <button class="task-item-btn task-erase-btn"><img src="/Img/erase.svg"></button>
-                                </li>
-                                <li class="task-item done">
-                                    <button class="task-status-btn"><div class="task-status"></div></button>
-                                    <div class="task-details">
-                                        <h2 class="task-title">Finish TodoApp v2</h2>
-                                        <span class="task-category">
-                                            <div class="category-color"></div>
-                                            <span class="category-name">Undifined</span>
-                                        </span>
-                                    </div>
-                                    <button class="task-item-btn task-edit-btn"><img src="/Img/edit.svg"></button>
-                                    <button class="task-item-btn task-erase-btn"><img src="/Img/erase.svg"></button>
-                                </li> -->
                             </ul>
                         </div>
                     </div>
@@ -135,6 +111,25 @@
                 <div class="popup-nav">
                     <button class="popup-nav-btn popup-nav-cancel">Cancel</button>
                     <button class="popup-nav-btn popup-nav-create popup-nav-add">Add</button>
+                </div>
+            </section>
+        </main>        
+        <main class="popup edit-task-popup">
+            <section class="popup-card">
+                <p>Insert name</p>
+                <input class="task-title-input" type="text" placeholder="Task name">
+                <p>Select a category</p>
+                <div class="task-category-dropdown">
+                    <button class="task-category-btn">
+                        <span class="task-category-name">none</span>
+                        <img src="/Img/arrow.svg">
+                    </button>
+                    <ul class="task-category-list">
+                    </ul>
+                </div>
+                <div class="popup-nav">
+                    <button class="popup-nav-btn popup-nav-cancel">Cancel</button>
+                    <button class="popup-nav-btn popup-nav-save">Save</button>
                 </div>
             </section>
         </main>        
