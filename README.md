@@ -1,4 +1,3 @@
-[screen-capture (9).webm](https://github.com/user-attachments/assets/9f9def7e-bbac-4067-8589-a123565df260)
 # TodoApp V2 — Vanilla JavaScript Rebuild
 
 TodoApp V2 is a vanilla JavaScript remake of a React todo app.
