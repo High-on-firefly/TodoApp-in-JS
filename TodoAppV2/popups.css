@@ -1,3 +1,4 @@
+/* POPUP */
 .popup{
     display: none;
     position: fixed;
@@ -6,6 +7,7 @@
     user-select: none;
     background-color: rgba(0, 0, 0, 0.4);
     
+    z-index: 30;
     inset: 0;
 }
 .popup.open{
@@ -18,7 +20,7 @@
     
     border-radius: 10px;
     padding: 10px 50px;
-    width: 500px;
+    width: min(500px, 100%)
 }
 .popup-card p{
     margin-block: 5px;
@@ -30,12 +32,27 @@
     border: solid 1px #777;
     color: inherit;
 
-    /* padding-left: 5px; */
     margin-block: 5px;
     font-size: 18px;
     border-radius: 5px;
     width: 100%;
 }
+.popup-nav{
+    margin-block: 15px;
+}
+.popup-nav-btn{
+    background-color: inherit;
+
+    width: 100px;
+    padding-block: 5px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+.popup-nav-btn:hover{
+    background-color: #eee;
+}
+
+/* TASK CATEGORY BTN */
 .popup-card .task-category-btn{
     background-color: inherit;
     outline: none;
@@ -62,26 +79,16 @@
 .task-category-btn.active img{
     transform: rotate(180deg);
 }
-.popup-nav{
-    margin-block: 15px;
-}
-.category-name-input, .task-title-input, .task-category-btn{
+
+/* INPUTS  */
+.category-name-input, .task-title-input{
     padding: 5px 10px;
 }
 .category-color-input{
     height: 30px;
 }
-.popup-nav-btn{
-    background-color: inherit;
 
-    width: 100px;
-    padding-block: 5px;
-    font-size: 16px;
-    border-radius: 5px;
-}
-.popup-nav-btn:hover{
-    background-color: #eee;
-}
+/* BUTTONS */
 .popup-nav-cancel{
     border: solid 1px #681cc0;
     color: #681cc0;
@@ -98,6 +105,8 @@
     border: solid 1px #d32a00;
     color: #d32a00;
 }
+
+/* TASK CATEGORY LIST  */
 .task-category-list{
     position: fixed;
     list-style: none;
@@ -106,8 +115,8 @@
     overflow: hidden;
     transition: max-height 0.3s ease;
     
+    width: min(400px, calc(100vw - 40px));
     max-height: 0px;
-    width: 400px;
     background-color: #fcfcfc;
     border-radius: 8px;
 }
